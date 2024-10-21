@@ -1,0 +1,53 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - main  # Déclencher le pipeline sur chaque push dans la branche 'main'
+  pull_request:
+    branches:
+      - main  # Déclencher également sur les pull requests vers la branche 'main'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        echo "Installation des dépendances"
+        pip install -r requirements.txt
+
+  build:
+    runs-on: ubuntu-latest
+    needs: setup  # Le job 'build' dépend du job 'setup'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run Python script
+      run: |
+        echo "Exécution du code Python"
+        python 1_test_espace.py
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # Le job 'test' dépend du job 'build'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run tests
+      run: |
+        echo "Lancement des tests unitaires"
+        pytest tests/  # Lancer les tests unitaires avec pytest
